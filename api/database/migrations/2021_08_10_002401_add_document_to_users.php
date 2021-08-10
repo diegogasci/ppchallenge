@@ -28,6 +28,9 @@ class AddDocumentToUsers extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('document_type');
+        });
+
+        Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('document');
         });
     }
