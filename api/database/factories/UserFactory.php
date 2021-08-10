@@ -2,7 +2,10 @@
 
 namespace Database\Factories;
 
+use Carbon\Carbon;
 use App\Models\User;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UserFactory extends Factory
@@ -23,7 +26,21 @@ class UserFactory extends Factory
     {
         return [
             'name' => $this->faker->name,
-            'email' => $this->faker->unique()->safeEmail,
+            'email' => $this->faker->email,
+            'email_verified_at' => Carbon::now()->toDateTimeString(),
+            'document_type' => 0,
+            'document' => rand(00000000001, 99999999999),
+            'password' => Hash::make(123456),
+            'remember_token' => Str::random(10),
         ];
+    }
+
+    public function shopkeeper()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'document_type' => 1,
+            ];
+        });
     }
 }

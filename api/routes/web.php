@@ -13,6 +13,17 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    echo 'it works';
+$router->group(['prefix' => 'user'], function () use ($router) {
+    $router->get('/{userId}', ['uses' => 'UserController@show', 'as' => 'user.show']);
+    $router->post('/', ['uses' => 'UserController@create', 'as' => 'user.create']);
+    $router->patch('/{userId}', ['uses' => 'UserController@update', 'as' => 'user.update']);
+    $router->delete('/{userId}', ['uses' => 'UserController@delete', 'as' => 'user.delete']);
+
+    $router->get('/{userId}/transactions', ['uses' => 'UserController@transactions', 'as' => 'user.transactions']);
+    $router->get('/{userId}/wallet', ['uses' => 'UserController@wallet', 'as' => 'user.wallet']);
 });
+
+$router->post('transaction', ['uses' => 'TransactionController@create', 'as' => 'transaction.create']);
+
+// Helpers
+$router->get('/user/list/all', 'UserController@all');

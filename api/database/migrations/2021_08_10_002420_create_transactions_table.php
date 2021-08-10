@@ -18,7 +18,8 @@ class CreateTransactionsTable extends Migration
             $table->unsignedBigInteger('payer_id');
             $table->unsignedBigInteger('payee_id');
             $table->decimal('amount');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
 
             $table->foreign('payer_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('payee_id')->references('id')->on('users')->onDelete('cascade');
