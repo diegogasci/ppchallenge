@@ -46,77 +46,77 @@ Para facilitar a visualização da API foi criada uma collection via Postman, di
 ## Usuário
 
 ### - Create
-**Endpoint:** /user
-**Método:** POST 
-**Payload:**
-name: (string) Nome do usuário a ser criado.
-email: (string) Email do usuário a ser criado.
-document_type: (0/1) Identificador do tipo de usuário (0 para usuário comum, 1 para lojista).
-document: (string) Documento de identificação a ser criado.
-password: (string) Senha do usuário a ser criado.
-**Responses**
-200 - SUCESSO.
-401/422 - ERRO. Descrição disponível em campo *message*.
+**Endpoint:** /user  
+**Método:** POST   
+**Payload:**  
+name: (string) Nome do usuário a ser criado.  
+email: (string) Email do usuário a ser criado.  
+document_type: (0/1) Identificador do tipo de usuário (0 para usuário comum, 1 para lojista).  
+document: (string) Documento de identificação a ser criado.  
+password: (string) Senha do usuário a ser criado.  
+**Responses**  
+200 - SUCESSO.  
+401/422 - ERRO. Descrição disponível em campo *message*.  
 
 ### - Show
-**Endpoint:** /user/*{userId}*
-**Método:** GET 
-**Payload:** -
-**Responses**
-200 - SUCESSO.
-401/422 - ERRO. Descrição disponível em campo *message*.
+**Endpoint:** /user/*{userId}*  
+**Método:** GET  
+**Payload:** -  
+**Responses**  
+200 - SUCESSO.  
+401/422 - ERRO. Descrição disponível em campo *message*.  
 
 ### - Update
-Atualiza uma ou mais informação do usuário, de acordo com o payload
-**Endpoint:** /user/*{userId}*
-**Método:** PATCH 
-**Payload:**
-name: (string) Nome do usuário a ser criado.
-email: (string) Email do usuário a ser criado.
-document_type: (0/1) Identificador do tipo de usuário (0 para usuário comum, 1 para lojista).
-document: (string) Documento de identificação a ser criado.
-password: (string) Senha do usuário a ser criado.
-**Responses**
-200 - SUCESSO.
-401/422 - ERRO. Descrição disponível em campo *message*.
+Atualiza uma ou mais informação do usuário, de acordo com o payload  
+**Endpoint:** /user/*{userId}*  
+**Método:** PATCH   
+**Payload:**  
+name: (string) Nome do usuário a ser criado.  
+email: (string) Email do usuário a ser criado.  
+document_type: (0/1) Identificador do tipo de usuário (0 para usuário comum, 1 para lojista).  
+document: (string) Documento de identificação a ser criado.  
+password: (string) Senha do usuário a ser criado.  
+**Responses**  
+200 - SUCESSO.  
+401/422 - ERRO. Descrição disponível em campo *message*.  
 
 ### - Delete
-**Endpoint:** /user/*{userId}*
-**Método:** DELETE 
-**Payload:** -
-**Responses**
-204 - SUCESSO.
-401/422 - ERRO. Descrição disponível em campo *message*.
+**Endpoint:** /user/*{userId}*  
+**Método:** DELETE   
+**Payload:** -  
+**Responses**  
+204 - SUCESSO.  
+401/422 - ERRO. Descrição disponível em campo *message*.  
 
 ### - Show wallet
-Exibe a carteira de um usuário específico
-**Endpoint:** /user/*{userId}*/wallet
-**Método:** GET 
-**Payload:** -
-**Responses**
-200 - SUCESSO.
-401/422 - ERRO. Descrição disponível em campo *message*.
+Exibe a carteira de um usuário específico  
+**Endpoint:** /user/*{userId}*/wallet  
+**Método:** GET  
+**Payload:** -  
+**Responses**  
+200 - SUCESSO.  
+401/422 - ERRO. Descrição disponível em campo *message*.  
 
 
 ## Transação
 
 ### - Create
-**Endpoint:** /transaction
-**Método:** POST 
-**Payload:**
-payer_id: Id de usuário pagador
-payee_id: Id de usuário recebedor
-amout: Valor da transação em dinheiro
-**Responses**
-200 - SUCESSO.
-401/422 - ERRO. Descrição disponível em campo *message*.
+**Endpoint:** /transaction  
+**Método:** POST  
+**Payload:**  
+payer_id: Id de usuário pagador  
+payee_id: Id de usuário recebedor  
+amout: Valor da transação em dinheiro  
+**Responses**  
+200 - SUCESSO.  
+401/422 - ERRO. Descrição disponível em campo *message*.  
 
 ## Helper
 
 ### - list all users, with wallet
-Endpoint criado para facilitar visualização dos usuários e suas carteiras conforme são realizados os testes via Postman.
-**Endpoint:** /user/list/all
-**Método:** GET 
-**Payload:** -
-**Responses**
-200 - SUCESSO.
+Endpoint criado para facilitar visualização dos usuários e suas carteiras conforme são realizados os testes via Postman.  
+**Endpoint:** /user/list/all  
+**Método:** GET  
+**Payload:** -  
+**Responses**  
+200 - SUCESSO.  
