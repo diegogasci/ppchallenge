@@ -4,13 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    protected $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     public function show(Request $request)
     {
-        $user = User::findOrFail($request->userId);
+        $user = $this->userRepository->getUser($request->userId);
 
         return $user;
     }
@@ -32,29 +40,23 @@ class UserController extends Controller
 
     public function update(Request $request, $userId)
     {
-        $user = User::findOrFail($userId);
+        $user = $this->userRepository->getUser($userId);
         $user->update($request->all());
 
         return $user;
     }
 
-    public function delete(User $user)
+    public function delete($userId)
     {
+        $user = $this->userRepository->getUser($userId);
         $user->delete();
 
         return response()->json(null, 204);
     }
 
-    public function transactions($userId)
-    {
-        $user = User::findOrFail($userId);
-
-        return $user->transactions;
-    }
-
     public function wallet($userId)
     {
-        $user = User::findOrFail($userId);
+        $user = $this->userRepository->getUser($userId);
 
         return $user->wallet;
     }

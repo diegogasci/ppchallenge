@@ -19,7 +19,6 @@ $router->group(['prefix' => 'user'], function () use ($router) {
     $router->patch('/{userId}', ['uses' => 'UserController@update', 'as' => 'user.update']);
     $router->delete('/{userId}', ['uses' => 'UserController@delete', 'as' => 'user.delete']);
 
-    $router->get('/{userId}/transactions', ['uses' => 'UserController@transactions', 'as' => 'user.transactions']);
     $router->get('/{userId}/wallet', ['uses' => 'UserController@wallet', 'as' => 'user.wallet']);
 });
 
