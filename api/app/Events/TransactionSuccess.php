@@ -6,7 +6,7 @@ use App\Models\Transaction;
 
 class TransactionSuccess extends Event
 {
-    protected $transaction;
+    public $transaction;
 
     /**
      * Create a new event instance.

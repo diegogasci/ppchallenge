@@ -1,18 +1,27 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Http\Response;
+use App\Events\TransactionSuccess;
+use Illuminate\Support\Facades\Event;
 use App\Services\AuthorizationService;
+use Laravel\Lumen\Testing\DatabaseMigrations;
+use App\Listeners\SendTransactionNotification;
 
 class TransactionControllerTest extends TestCase
 {
-    use Laravel\Lumen\Testing\DatabaseMigrations;
+    use DatabaseMigrations;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        app()->bind(AuthorizationService::class, function() { // not a service provider but the target of service provider
+        app()->bind(AuthorizationService::class, function() {
             return new AuthorizationServiceMock();
+        });
+
+        app()->bind(SendTransactionNotification::class, function() {
+            return new SendTransactionNotificationMock();
         });
     }
 
@@ -31,7 +40,7 @@ class TransactionControllerTest extends TestCase
 
         $request = $this->post(route('transaction.create'), $payload);
 
-        $request->assertResponseStatus(200);
+        $request->assertResponseStatus(Response::HTTP_OK);
 
         $request->seeInDatabase('wallets', [
             'id' => $payer->wallet->id,
@@ -59,7 +68,7 @@ class TransactionControllerTest extends TestCase
 
         $request = $this->post(route('transaction.create'), $payload);
 
-        $request->assertResponseStatus(200);
+        $request->assertResponseStatus(Response::HTTP_OK);
 
         $request->seeInDatabase('wallets', [
             'id' => $payer->wallet->id,
@@ -87,7 +96,7 @@ class TransactionControllerTest extends TestCase
 
         $request = $this->post(route('transaction.create'), $payload);
 
-        $request->assertResponseStatus(422);
+        $request->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $request->seeJson(['message' => 'Tipo de usuário inválido']);
     }
@@ -105,7 +114,7 @@ class TransactionControllerTest extends TestCase
 
         $request = $this->post(route('transaction.create'), $payload);
 
-        $request->assertResponseStatus(422);
+        $request->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function testPayerShouldHaveEnoughBalanceToTrasfer()
@@ -123,7 +132,7 @@ class TransactionControllerTest extends TestCase
 
         $request = $this->post(route('transaction.create'), $payload);
 
-        $request->assertResponseStatus(422);
+        $request->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $request->seeJson(['message' => 'Saldo insuficiente para a transferência']);
     }
@@ -151,14 +160,53 @@ class TransactionControllerTest extends TestCase
 
         $request2 = $this->post(route('transaction.create'), $payload2);
 
-        $request->assertResponseStatus(422);
-        $request2->assertResponseStatus(422);
+        $request->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $request2->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+
+    public function testSuccessfulTransferCorrectlyDispatchEvent()
+    {
+        $payer = User::factory()->create();
+        $payer->wallet->deposit(300);
+
+        $payee = User::factory()->create();
+
+        $payload = [
+            'payer_id' => $payer->id,
+            'payee_id' => $payee->id,
+            'amount' => '100.00',
+        ];
+
+        Event::fake();
+
+        $this->post(route('transaction.create'), $payload);
+        $transaction = $this->response->getData()->transaction;
+
+        Event::assertDispatched(function (TransactionSuccess $event) use ($transaction) {
+            return $event->transaction->id === $transaction->id;
+        });
+    }
+
+
 }
 
+/**
+ * AuthorizationServiceMock mocking the external authorization check response
+ */
 class AuthorizationServiceMock extends AuthorizationService {
     public function check()
     {
         return true;
     }
 }
+
+/**
+ * AuthorizationServiceMock mocking the external authorization check response
+ */
+class SendTransactionNotificationMock extends SendTransactionNotification {
+    public function handle(TransactionSuccess $event)
+    {
+        $transaction = $event->transaction;
+    }
+}
+

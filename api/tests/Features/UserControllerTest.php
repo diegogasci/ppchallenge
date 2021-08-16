@@ -1,21 +1,12 @@
 <?php
 
 use App\Models\User;
-use Faker\Generator as Faker;
+use Illuminate\Http\Response;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
 class UserControllerTest extends TestCase
 {
     use DatabaseMigrations;
-
-    protected $faker;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->faker = new Faker();
-    }
 
     public function testUserIsCreatedSuccessfully()
     {
@@ -31,7 +22,7 @@ class UserControllerTest extends TestCase
 
         $request = $this->post(route('user.create'), $payload);
 
-        $request->assertResponseStatus(200);
+        $request->assertResponseStatus(Response::HTTP_OK);
     }
 
     public function testUserIsDeletedSuccessfully()
@@ -40,7 +31,7 @@ class UserControllerTest extends TestCase
 
         $request = $this->delete(route('user.delete', ['userId' => $user->id]));
 
-        $request->assertResponseStatus(204);
+        $request->assertResponseStatus(Response::HTTP_NO_CONTENT);
     }
 
     public function testUserIsUpdatedSuccessfully()
@@ -54,7 +45,7 @@ class UserControllerTest extends TestCase
 
         $request = $this->patch(route('user.update', ['userId' => $user->id]), $payload);
 
-        $request->assertResponseStatus(200);
+        $request->assertResponseStatus(Response::HTTP_OK);
 
         $request->seeInDatabase('users', [
             'id' => $user->id,
@@ -66,9 +57,9 @@ class UserControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $request = $this->patch(route('user.show', ['userId' => $user->id]));
+        $request = $this->get(route('user.show', ['userId' => $user->id]));
 
-        $request->assertResponseStatus(200);
+        $request->assertResponseStatus(Response::HTTP_OK);
 
         $request->seeJsonStructure([
             'id',
