@@ -2,10 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\Transaction;
 use App\Models\User;
-use App\Repositories\UserRepository;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\UserRepository;
+use App\Services\AuthorizationService;
+use App\Exceptions\InsufficientBalanceException;
+use App\Exceptions\UnauthorizedPaymentException;
+use App\Exceptions\InvalidPayeeUserTypeException;
 
 class TransactionService
 {
@@ -19,25 +23,21 @@ class TransactionService
 
     public function handle($data)
     {
-        if (!$this->transferAmountBiggerThanZero($data['amount'])) {
-            throw new \Exception('Valor de transferência inválido', 422);
-        }
-
         $payer = $this->userRepository->getUser($data['payer_id']);
 
         if (!$this->userCanTransfer($payer)) {
-            throw new \Exception('Tipo de usuário inválido', 422);
+            throw new InvalidPayeeUserTypeException;
         }
 
         if (!$this->userHasSufficientBalance($payer, $data['amount'])) {
-            throw new \Exception('Saldo insuficiente para a transferência', 422);
+            throw new InsufficientBalanceException;
         }
 
         if (!$this->authorizationService->check()) {
-            throw new \Exception('Transação não autorizada.', 401);
+            throw new UnauthorizedPaymentException;
         }
 
-        $payee = User::with('wallet')->findOrFail($data['payee_id']);
+        $payee = $this->userRepository->getUser($data['payee_id']);
 
         $transaction = DB::transaction(function () use ($payer, $payee, $data) {
             $payer->wallet->withdraw($data['amount']);
@@ -67,15 +67,5 @@ class TransactionService
     private function userHasSufficientBalance(User $payer, $transferAmount)
     {
         return $payer->wallet->balance >= $transferAmount;
-    }
-
-    /**
-     * Checks if transfer amount is bigger than zero.
-     *
-     * @return bool
-     */
-    private function transferAmountBiggerThanZero($transferAmount)
-    {
-        return $transferAmount > 0;
     }
 }

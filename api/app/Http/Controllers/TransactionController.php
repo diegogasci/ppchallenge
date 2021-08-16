@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\Events\TransactionSuccess;
 use App\Services\TransactionService;
-use Illuminate\Http\Request;
+use App\Exceptions\InsufficientBalanceException;
+use App\Exceptions\UnauthorizedPaymentException;
+use App\Exceptions\InvalidPayeeUserTypeException;
 
 class TransactionController extends Controller
 {
@@ -28,15 +32,16 @@ class TransactionController extends Controller
 
             event(new TransactionSuccess($transaction));
 
-            return response()->json(['message' => 'Transação realizada com sucesso.'], 200);
+            return response()->json([
+                'message' => 'Transação realizada com sucesso.',
+                'transaction' => $transaction
+            ], Response::HTTP_OK);
+        } catch (InvalidPayeeUserTypeException |
+            InsufficientBalanceException |
+            UnauthorizedPaymentException $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode());
         } catch (\Exception $e) {
-            $statusCode = $e->getCode();
-
-            if ($statusCode < 200) {
-                $statusCode = 500;
-            }
-
-            return response()->json(['message' => $e->getMessage()], $statusCode);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 }

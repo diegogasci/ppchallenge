@@ -45,4 +45,19 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     {
         return $this->hasOne(Wallet::class);
     }
+
+    public function transactionsMade()
+    {
+        return $this->hasMany(Transaction::class, 'payer_id');
+    }
+
+    public function transactionsReceived()
+    {
+        return $this->hasMany(Transaction::class, 'payee_id');
+    }
+
+    public function transactions()
+    {
+        return collect([$this->transactionsMade(), $this->transactionsReceived()]);
+    }
 }
