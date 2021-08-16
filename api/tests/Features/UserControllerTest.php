@@ -38,7 +38,7 @@ class UserControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $request = $this->delete(route('user.delete', $user->id));
+        $request = $this->delete(route('user.delete', ['userId' => $user->id]));
 
         $request->assertResponseStatus(204);
     }

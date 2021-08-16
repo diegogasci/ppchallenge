@@ -20,7 +20,7 @@ class TransactionService
     public function handle($data)
     {
         if (!$this->transferAmountBiggerThanZero($data['amount'])) {
-            throw new \Exception('Valor de transferência inválido', 401);
+            throw new \Exception('Valor de transferência inválido', 422);
         }
 
         $payer = $this->userRepository->getUser($data['payer_id']);

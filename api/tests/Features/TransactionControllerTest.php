@@ -1,9 +1,7 @@
 <?php
 
 use App\Models\User;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Handler\MockHandler;
+use App\Services\AuthorizationService;
 
 class TransactionControllerTest extends TestCase
 {
@@ -13,12 +11,9 @@ class TransactionControllerTest extends TestCase
     {
         parent::setUp();
 
-        $mock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], 'Hello, World'),
-            new \Exception('Error Communicating with Server')
-        ]);
-
-        $handlerStack = HandlerStack::create($mock);
+        app()->bind(AuthorizationService::class, function() { // not a service provider but the target of service provider
+            return new AuthorizationServiceMock();
+        });
     }
 
     public function testCommonUserCanTransferToCommonUser()
@@ -156,10 +151,14 @@ class TransactionControllerTest extends TestCase
 
         $request2 = $this->post(route('transaction.create'), $payload2);
 
-        $request->assertResponseStatus(401);
-        $request2->assertResponseStatus(401);
+        $request->assertResponseStatus(422);
+        $request2->assertResponseStatus(422);
+    }
+}
 
-        $request->seeJson(['message' => 'Valor de transferência inválido']);
-        $request2->seeJson(['message' => 'Valor de transferência inválido']);
+class AuthorizationServiceMock extends AuthorizationService {
+    public function check()
+    {
+        return true;
     }
 }

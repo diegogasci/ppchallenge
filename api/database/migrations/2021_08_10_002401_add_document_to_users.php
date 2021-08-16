@@ -14,8 +14,8 @@ class AddDocumentToUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->tinyInteger('document_type')->after('email_verified_at');
-            $table->string('document')->after('document_type')->unique();
+            $table->tinyInteger('document_type')->after('email_verified_at')->default(0);
+            $table->string('document')->after('document_type')->unique()->default('');
         });
     }
 
