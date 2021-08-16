@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 class UserRepository
 {
     const COMMONUSER = 0;
-    const SHOPKEEPER = 0;
+    const SHOPKEEPER = 1;
 
     public function createUser(array $data)
     {
