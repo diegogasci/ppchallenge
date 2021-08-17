@@ -3,35 +3,33 @@
 A aplicação PP Challenge foi desenvolvida utilizando o micro-framework PHP Lumen, visto que é um framework leve, otimizado para o desenvolvimento de APIs e micro-serviços, mas que conta com a confiança já criada com o projeto "irmão maior", Laravel.
 
 ## Setup 
-Para o setup inicial é necessário clonar este repositório em sua máquina e realizar a instalação das dependências: 
-```bash
-git clone git@github.com:diegogasci/ppchallenge.git
-cd ppchallenge/api
-composer install
-```
 
-Após instalado, podemos popular o banco a partir das migrations e seeds criadas com os comandos abaixo a parti da pasta `api`:
-
-```bash
-php artisan migrate
-php artisan db:seed
-```
-
-A aplicação conta com uma estrutura em Docker responsável pelo serviço de banco de dados (MySQL), webserver (nginx) e PHP (7.4). Para iniciá-la, basta executar:
+A aplicação conta com uma estrutura em Docker responsável pelo serviço de banco de dados (MySQL), webserver (nginx) e PHP (8.0). Para iniciá-la, basta executar:
 
 ```bash
 docker-compose up
 ```
 
-Feito isso a aplicação estará disponível em localhost, porta 8000 : <http://localhost:8000>.
+Para o setup inicial é necessário a instalação das dependências da aplicação: 
+```bash
+docker-compose exec php-fpm composer install
+```
+
+Após a instalação das dependência, podemos popular o banco a partir das migrations e seeds, com os comandos abaixo:
+
+```bash
+docker-compose exec php-fpm php artisan migrate
+docker-compose exec php-fpm php artisan db:seed
+```
+
+Feito isso a aplicação estará completa e disponível em localhost, porta 8000 : <http://localhost:8000>.
 
 ## Tests
 
 Foram criados testes de integração cobrindo as rotinas disponíveis nos controllers de usuários (UserController) e transações (TransactionController):
 
 ```bash
-cd api
-vendor/bin/phpunit
+docker-compose exec php-fpm vendor/bin/phpunit
 ```
 
 # Postman collection
